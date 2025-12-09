@@ -7,7 +7,7 @@ export default function useAISuggestions() {
 
   const fetchSuggestions = async (noteData) => {
     if (!user) return [];
-    const res = await getAISuggestions(user.token, noteData);
+    const res = await getAISuggestions(noteData);
     return res.suggestions || "";
   };
 

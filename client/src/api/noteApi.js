@@ -1,32 +1,22 @@
 // frontend/src/api/noteApi.js
-import axios from "axios";
+import axiosInstance from "./axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
-export const getNotes = async (token, tags = "") => {
-  const res = await axios.get(`${API_URL}/notes${tags ? `?tags=${tags}` : ""}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getNotes = async (tags = "") => {
+  const res = await axiosInstance.get(`/notes${tags ? `?tags=${tags}` : ""}`);
   return res.data;
 };
 
-export const createNote = async (token, data) => {
-  const res = await axios.post(`${API_URL}/notes`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const createNote = async (data) => {
+  const res = await axiosInstance.post("/notes", data);
   return res.data;
 };
 
-export const updateNote = async (token, id, data) => {
-  const res = await axios.put(`${API_URL}/notes/${id}`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const updateNote = async (id, data) => {
+  const res = await axiosInstance.put(`/notes/${id}`, data);
   return res.data;
 };
 
-export const deleteNote = async (token, id) => {
-  const res = await axios.delete(`${API_URL}/notes/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const deleteNote = async (id) => {
+  const res = await axiosInstance.delete(`/notes/${id}`);
   return res.data;
 };

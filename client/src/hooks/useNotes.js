@@ -7,27 +7,27 @@ export default function useNotes() {
 
   const fetchNotes = async (tags = "") => {
     if (!user) return;
-    const data = await noteApi.getNotes(user.token, tags);
+    const data = await noteApi.getNotes(tags);
     setNotes(data);
   };
 
   const createNote = async (note) => {
     if (!user) return;
-    const data = await noteApi.createNote(user.token, note);
+    const data = await noteApi.createNote(note);
     setNotes([data, ...notes]);
     return data;
   };
 
   const updateNote = async (id, note) => {
     if (!user) return;
-    const updated = await noteApi.updateNote(user.token, id, note);
+    const updated = await noteApi.updateNote(id, note);
     setNotes(notes.map((n) => (n._id === id ? updated : n)));
     return updated;
   };
 
   const deleteNote = async (id) => {
     if (!user) return;
-    await noteApi.deleteNote(user.token, id);
+    await noteApi.deleteNote(id);
     setNotes(notes.filter((n) => n._id !== id));
   };
 
