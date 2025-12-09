@@ -2,6 +2,7 @@
 import Note from "../models/Note.js";
 import { getAISuggestions } from "../services/geminiService.js";
 import logger from "../utils/logger.js";
+import connectDB from "../config/db.js";
 
 const NOTE_TAG = "[NoteFeature]";
 const AI_TAG = "[AIFeature]";
@@ -9,6 +10,7 @@ const AI_TAG = "[AIFeature]";
 // Get all notes (with tag filter)
 export const getNotes = async (req, res) => {
   try {
+    await connectDB();
     const { tags } = req.query;
     const userId = req.user._id;
 
@@ -41,6 +43,7 @@ export const getNotes = async (req, res) => {
 // Create note
 export const createNote = async (req, res) => {
   try {
+    await connectDB();
     const userId = req.user._id;
     const { title, content, tags } = req.body;
 
@@ -79,6 +82,7 @@ export const createNote = async (req, res) => {
 // Update note
 export const updateNote = async (req, res) => {
   try {
+    await connectDB();
     const userId = req.user._id;
     const noteId = req.params.id;
     const { title, content } = req.body;
@@ -117,6 +121,7 @@ export const updateNote = async (req, res) => {
 // Delete note
 export const deleteNote = async (req, res) => {
   try {
+    await connectDB();
     const userId = req.user._id;
     const noteId = req.params.id;
 
@@ -152,6 +157,7 @@ export const deleteNote = async (req, res) => {
 // AI Suggestions
 export const suggestAI = async (req, res) => {
   try {
+    await connectDB();
     const userId = req.user._id;
     const { title, content } = req.body;
 

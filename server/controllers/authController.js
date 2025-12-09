@@ -2,6 +2,7 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import logger from "../utils/logger.js";
+import connectDB from "../config/db.js";
 
 const TAG = "[AuthFeature]";
 
@@ -12,6 +13,7 @@ export const register = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    await connectDB();
     logger.action(TAG, "Registration attempt", null, { email });
 
     // Validation
@@ -57,6 +59,7 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    await connectDB();
     logger.action(TAG, "Login attempt", null, { email });
 
     // Validation
@@ -109,6 +112,7 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
+    await connectDB();
     const userId = req.user?._id;
     logger.action(TAG, "Logout", userId, { email: req.user?.email });
 

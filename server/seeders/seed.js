@@ -13,48 +13,44 @@ const seedData = async () => {
   try {
     const db = mongoose.connection.db;
 
-    // --- Users Seeding --- //
-    const existingCollections = await db.listCollections().toArray();
-    const collectionNames = existingCollections.map(c => c.name);
+    const collections = await db.listCollections().toArray();
+    const collectionNames = collections.map(c => c.name);
 
-    if (!collectionNames.includes('users')) {
-      console.log('🆕 Creating "users" collection...');
-    } else {
-      console.log('⚠️ "users" collection exists.');
-    }
+    // --- USERS SEEDING --- //
+    console.log(collectionNames.includes("users")
+      ? '⚠️ "users" collection exists.'
+      : '🆕 Creating "users" collection...'
+    );
 
     // Clear existing users
     await User.deleteMany();
 
+    // Pre-hash because schema pre-save won't run when using insertMany
     const hashPassword = async (password) => await bcrypt.hash(password, 10);
 
     const users = [
       {
-        name: "Dummy User",
         email: "dummy@user.com",
         password: await hashPassword("password123"),
-        role: "user",
       },
       {
-        username: 'admin',
-        email: 'admin@example.com',
-        password: await hashPassword('hellovue'),
-        role: 'admin',
+        email: "admin@example.com",
+        password: await hashPassword("adminpass123"),
       },
     ];
 
-    await User.insertMany(users);
-    console.log('🌱 Users seeded successfully 🌱');
+    const createdUsers = await User.insertMany(users);
+    console.log("🌱 Users seeded successfully!");
 
-    // --- Notes Seeding --- //
-    if (!collectionNames.includes('notes')) {
-      console.log('🆕 Creating "notes" collection...');
-    } else {
-      console.log('⚠️ "notes" collection exists.');
-    }
+    const dummyUser = createdUsers.find(u => u.email === "dummy@user.com");
 
-    // Get dummy user for notes
-    const dummyUser = await User.findOne({ email: "dummy@user.com" });
+    // --- NOTES SEEDING --- //
+    console.log(collectionNames.includes("notes")
+      ? '⚠️ "notes" collection exists.'
+      : '🆕 Creating "notes" collection...'
+    );
+
+    await Note.deleteMany({ user: dummyUser._id });
 
     const sampleNotes = [
       {
@@ -95,17 +91,16 @@ const seedData = async () => {
       },
     ];
 
-    // Remove existing notes for dummy user
-    await Note.deleteMany({ user: dummyUser._id });
     await Note.insertMany(sampleNotes);
-    console.log('🌱 Notes seeded successfully 🌱');
 
-  } catch (error) {
-    console.error(`🚨 Error seeding data: ${error.message} 🚨`);
+    console.log("🌱 Notes seeded successfully!");
+
+  } catch (err) {
+    console.error(`🚨 Error seeding data: ${err.message} 🚨`);
     process.exit(1);
   } finally {
     await mongoose.connection.close();
-    console.log('🔌 Database connection closed 🔌');
+    console.log("🔌 Database connection closed");
   }
 };
 

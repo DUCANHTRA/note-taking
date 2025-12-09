@@ -1,14 +1,66 @@
 // backend/config/db.js
 import mongoose from "mongoose";
+import dotenv from 'dotenv';
 
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (err) {
-    console.error(`DB Error: ${err.message}`);
-    process.exit(1);
+dotenv.config();
+const MONGO_URI = process.env.MONGO_URI;
+const DB_NAME = process.env.DB_NAME;
+
+if (!MONGO_URI) {
+  throw new Error(
+    "Please define the MONGO_URI environment variable inside .env"
+  );
+}
+
+if (!DB_NAME) {
+  throw new Error(
+    "Please define the DB_NAME environment variable inside .env"
+  );
+}
+
+/**
+ * Global is used here to maintain a cached connection across hot reloads
+ * in development. This prevents connections from growing exponentially
+ * during API Route usage in serverless environments like Vercel.
+ */
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB() {
+  if (cached.conn) {
+    return cached.conn;
   }
-};
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 10000, // Keep trying to send operations for 10 seconds
+    };
+
+    cached.promise = mongoose.connect(MONGO_URI, {
+      // ✅ Forces correct DB name from .env
+      dbName: DB_NAME,
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 10000,
+    }).then((mongoose) => {
+      console.log("✅ New MongoDB connection established.");
+      console.log("📦 Connected to DB:", mongoose.connection.name);
+      return mongoose;
+    });
+  }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    console.error("❌ MongoDB connection error:", e.message);
+    throw e;
+  }
+
+  return cached.conn;
+}
 
 export default connectDB;
