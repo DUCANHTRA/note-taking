@@ -403,7 +403,7 @@ This project is licensed under the MIT License.
 
 ## 👥 Authors
 
-- Your Name - Initial work
+- Mark Tran
 
 ## 🙏 Acknowledgments
 
@@ -419,6 +419,3 @@ For issues and questions:
 - Review the logs with debug tags
 - Open an issue on GitHub
 
----
-
-**Built with ❤️ using the MERN stack**
