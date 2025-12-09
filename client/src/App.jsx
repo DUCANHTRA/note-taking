@@ -1,5 +1,5 @@
 // frontend/src/App.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import useAuth from "./hooks/useAuth";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";

@@ -1,4 +1,3 @@
-// backend/models/User.js
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
@@ -19,16 +18,17 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Hash password before saving
-UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
+// Hash password before saving (async-style)
+UserSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Compare passwords
-UserSchema.methods.matchPassword = function (entered) {
-  return bcrypt.compare(entered, this.password);
+UserSchema.methods.comparePassword = function (plainPassword) {
+  return bcrypt.compare(plainPassword, this.password);
 };
 
 export default mongoose.model("User", UserSchema);
