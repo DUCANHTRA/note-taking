@@ -22,4 +22,9 @@ app.use(morgan("dev")); // <-- add morgan logging
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
 
+
+// --- Test Route ---
+app.get('/', (req, res) => {
+  res.json({ message: 'API is running...' });
+});
 export default app;
