@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import useAuth from "../../hooks/useAuth";
 
-export default function Login() {
+export default function Login({ onSwitchToRegister }) {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,6 +47,17 @@ export default function Login() {
         >
           Login
         </button>
+
+        <p className="mt-4 text-center text-gray-600">
+          Don't have an account?{" "}
+          <button
+            type="button"
+            onClick={onSwitchToRegister}
+            className="text-blue-600 hover:underline"
+          >
+            Register here
+          </button>
+        </p>
       </form>
     </div>
   );
